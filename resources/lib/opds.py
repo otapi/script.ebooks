@@ -153,6 +153,15 @@ class Opds():
                         bookDetails['author'] = bookDetails['author'].replace('&quote;', '"')
                         bookDetails['author'] = bookDetails['author'].replace('&nbsp;', ' ')
 
+                    # Get all the tags/categories
+                    tags = ""
+                    
+                    for linkElem in elemItem.findAll('category'):
+                        relAttrib = linkElem.get('term', None)
+                        if tags not in [None, ""]:
+                            tags = tags + ", "
+                        tags = tags + relAttrib
+                    
                     # Get the description of the book
                     description = ""
                     summaryElem = elemItem.find('summary')
@@ -164,11 +173,16 @@ class Opds():
                         if contentElem not in [None, ""]:
                             description = contentElem.text
 
+                    if tags not in [None, ""]:
+                        description = "[I]"+ tags + "[/I]\n" + description 
+
                     if description not in [None, ""]:
                         bookDetails['description'] = description
                         bookDetails['description'] = bookDetails['description'].replace('&amp;', '&')
                         bookDetails['description'] = bookDetails['description'].replace('&quote;', '"')
                         bookDetails['description'] = bookDetails['description'].replace('&nbsp;', ' ')
+
+                    
 
                     # Get all the links
                     for linkElem in elemItem.findAll('link'):
@@ -192,7 +206,7 @@ class Opds():
                                 bookDetails['link'] = bookLink
                                 self.isBookList = True
                             # Get the cover image for the book
-                            elif 'cover' in relAttrib:
+                            elif 'cover' in relAttrib or 'http://opds-spec.org/image' == relAttrib:
                                 bookDetails['cover'] = "%s%s" % (Settings.getOPDSLocation(), linkElem['href'])
 
                     booklist.append(bookDetails)
