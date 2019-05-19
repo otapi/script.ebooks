@@ -308,7 +308,7 @@ class MenuNavigator():
             li.setProperty("Fanart_Image", FANART)
             if bookDetails['description'] not in [None, ""]:
                 li.setInfo('video', {'Plot': bookDetails['description']})
-            li.addContextMenuItems(self._getContextMenu(bookDetails['link']), replaceItems=True)
+            li.addContextMenuItems(self._getContextMenu(bookDetails['link']), replaceItems=False)
             xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=url, listitem=li, isFolder=True)
 
         xbmcplugin.endOfDirectory(self.addon_handle)
@@ -524,8 +524,8 @@ if __name__ == '__main__':
     addon_handle = int(sys.argv[1])
     args = urlparse.parse_qs(sys.argv[2][1:])
 
-    # Record what the plugin deals with, files in our case
-    xbmcplugin.setContent(addon_handle, 'files')
+    # Record what the plugin deals with, files in our case - otapi: description doesn't visible at files content on most skins, so set it as movies...
+    xbmcplugin.setContent(addon_handle, 'movies')
 
     # Get the current mode from the arguments, if none set, then use None
     mode = args.get('mode', None)
