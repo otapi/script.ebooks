@@ -43,15 +43,22 @@ class MenuNavigator():
         return self.base_url + '?' + urllib.urlencode(query)
 
     def rootMenu(self):
+        # Get the setting for the OPDS and ebook directory
         rootOpds = Settings.getOPDSLocation()
+        eBookFolder = Settings.getEbookFolder()
+
+        # If neither of OPDS and local folder set
+        if rootOpds in [None, ""] and eBookFolder in [None, ""]:
+            xbmcgui.Dialog().ok(ADDON.getLocalizedString(32001), ADDON.getLocalizedString(32034))
+            return
+        
 
         # If OPDS is not being used then just use the directory details
         if rootOpds in [None, ""]:
             self.showEbooksDirectory()
             return
 
-        # Get the setting for the ebook directory
-        eBookFolder = Settings.getEbookFolder()
+        
 
         # If OPDS is enabled and there is no local folder set, then just use OPDS
         if eBookFolder in [None, ""]:
@@ -304,7 +311,7 @@ class MenuNavigator():
                 coverTargetName = Settings.getFallbackCoverImage()
 
             url = self._build_url({'mode': 'chapters', 'filename': bookDetails['link'], 'cover': coverTargetName})
-            li = xbmcgui.ListItem(displayString, iconImage=coverTargetName)
+            li = xbmcgui.ListItem(displayString, iconImage=coverTargetName, thumbnailImage=coverTargetName)
             li.setProperty("Fanart_Image", FANART)
             if bookDetails['description'] not in [None, ""]:
                 li.setInfo('video', {'Plot': bookDetails['description']})

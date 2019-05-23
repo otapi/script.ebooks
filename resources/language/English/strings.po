@@ -155,3 +155,7 @@ msgstr ""
 msgctxt "#32033"
 msgid "3rd"
 msgstr ""
+
+msgctxt "#32034"
+msgid "Neither an OPDS nor a local folder was set. Please open the Settings to set up one!"
+msgstr ""
