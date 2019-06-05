@@ -159,3 +159,15 @@ msgstr ""
 msgctxt "#32034"
 msgid "Neither an OPDS nor a local folder was set. Please open the Settings to set up one!"
 msgstr ""
+
+msgid "Support Calibre-Web"
+msgstr ""
+
+msgid "Authenticate to Calibre-Web"
+msgstr ""
+
+msgid "Username"
+msgstr ""
+
+msgid "Password"
+msgstr ""
