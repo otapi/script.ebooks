@@ -31,6 +31,8 @@ FANART = ADDON.getAddonInfo('fanart')
 # Class to handle the navigation information for the plugin
 ###################################################################
 class MenuNavigator():
+    shelves = []
+
     def __init__(self, base_url, addon_handle):
         self.base_url = base_url
         self.addon_handle = addon_handle
@@ -274,7 +276,7 @@ class MenuNavigator():
             li.setProperty("Fanart_Image", EBookBase.getFanArt(fullpath))
             if description not in [None, ""]:
                 li.setInfo('video', {'Plot': description})
-            li.addContextMenuItems(self._getContextMenu(fullpath), replaceItems=True)
+            li.addContextMenuItems(self._getBookContextMenu(fullpath, "bookid"), replaceItems=True)
             xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=url, listitem=li, isFolder=True)
 
         xbmcplugin.endOfDirectory(self.addon_handle)
@@ -315,7 +317,7 @@ class MenuNavigator():
             li.setProperty("Fanart_Image", FANART)
             if bookDetails['description'] not in [None, ""]:
                 li.setInfo('video', {'Plot': bookDetails['description']})
-            li.addContextMenuItems(self._getContextMenu(bookDetails['link']), replaceItems=False)
+            li.addContextMenuItems(self._getBookContextMenu(bookDetails['link'], "bookid"), replaceItems=False)
             xbmcplugin.addDirectoryItem(handle=self.addon_handle, url=url, listitem=li, isFolder=True)
 
         xbmcplugin.endOfDirectory(self.addon_handle)
@@ -511,6 +513,19 @@ class MenuNavigator():
 
         return ctxtMenu
 
+    def _getBookContextMenu(self, filepath, bookid):
+        ctxtMenu = []
+
+        '''shelves = ["Barnabas", "Vera"]'''
+        if len(self.shelves) == 0:
+            opds = Opds()
+            self.shelves = opds.getShelves()
+
+        for shelf in self.shelves:
+            cmd = self._build_url({'mode': 'addToShelf', 'bookid': bookid, 'shelf': shelf['id']})
+            ctxtMenu.append((ADDON.getLocalizedString(32035) + shelf['title'], 'RunPlugin(%s)' % cmd))
+        return ctxtMenu
+
     def markReadStatus(self, fullpath, chapterLink, markRead):
         # If there is no chapter link then we are clearing the read flag for the whole book
         # If the request was just for a chapter, then we would have been given the previous
@@ -638,6 +653,18 @@ if __name__ == '__main__':
         href = args.get('href', None)
 
         if (href is not None) and (len(href) > 0):
+            menuNav = MenuNavigator(base_url, addon_handle)
+            menuNav.opdsBookListing(href[0])
+            del menuNav
+
+    elif mode[0] == 'addToShelf':
+        log("EBooksPlugin: Mode is Add to Shelf")
+
+        shelf = args.get('shelf', None)
+        bookid = args.get('bookid', None)
+
+        if (shelf is not None) and (len(href) > 0):
+            '''/shelf/add/2/2735'''
             menuNav = MenuNavigator(base_url, addon_handle)
             menuNav.opdsBookListing(href[0])
             del menuNav

@@ -174,7 +174,7 @@ class Opds():
                             description = contentElem.text
 
                     if tags not in [None, ""]:
-                        description = "[I]"+ tags + "[/I]\n" + description 
+                        description = "[I]" + tags + "[/I]\n" + description
 
                     if description not in [None, ""]:
                         bookDetails['description'] = description
@@ -226,3 +226,35 @@ class Opds():
                 log("Opds: %s" % traceback.format_exc(), xbmc.LOGERROR)
 
         return booklist
+
+    def getShelves(self):
+        opdsContentsDetails = self._getUrlContents('/opds/shelfindex/public')
+
+        shelflist = []
+        if opdsContentsDetails not in [None, ""]:
+            log("Opds: OPDS Shef list is %s" % opdsContentsDetails)
+
+            try:
+                soup = BeautifulSoup(''.join(opdsContentsDetails))
+
+                # Check each entry, these will be the different view sections
+                for elemItem in soup.findAll('entry'):
+                    shelfDetails = {'title': '', 'id': ''}
+
+                    # Get the title of the shelf
+                    titleElem = elemItem.find('title')
+                    if titleElem not in [None, ""]:
+                        shelfDetails['title'] = titleElem.string
+                        shelfDetails['title'] = shelfDetails['title'].replace('&amp;', '&')
+                        shelfDetails['title'] = shelfDetails['title'].replace('&quote;', '"')
+                        shelfDetails['title'] = shelfDetails['title'].replace('&nbsp;', ' ')
+
+                    idElems = elemItem.find('id')
+                    if idElems not in [None, ""]:
+                        shelfDetails['id'] = idElems.text
+
+                    shelflist.append(shelfDetails)
+            except:
+                log("Opds: %s" % traceback.format_exc(), xbmc.LOGERROR)
+
+        return shelflist
